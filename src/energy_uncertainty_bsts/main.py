@@ -1,5 +1,9 @@
+def get_placeholder():
+    return "Placeholder text"
+
+
 def main():
-    print("Placeholder print.")
+    print(get_placeholder())
 
 
 if __name__ == "__main__":
