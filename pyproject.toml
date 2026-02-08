@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "A showcase of Bayesian Structural Time Series (BSTS) to analyse trend patterns in grid energy usage"
 dependencies = [
     "pytest",
+    "orbit-ml",
+    "pandas",
+    "matplotlib",
+    "setuptools>=68.0.0",
 ]
 
 [build-system]
