@@ -1,0 +1,16 @@
+[project]
+name = "energy_uncertainty_bsts"
+version = "0.1.0"
+description = "A showcase of Bayesian Structural Time Series (BSTS) to analyse trend patterns in grid energy usage"
+dependencies = [
+    "pytest",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v"

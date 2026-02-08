@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Ruff replaces Black, Flake8, and Isort in one go
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
+
+  - repo: https://github.com/jazzband/pip-tools
+    rev: v7.5.2
+    hooks:
+      - id: pip-compile
+        name: check-requirements-sync
+        entry: pip-compile --dry-run requirements.in
+        pass_filenames: false

@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Python cache
+*$py.class
+
+# Pytest cache
+.pytest_cache/
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# PyCharm settings
+.idea/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Coverage reports
+.coverage
+htmlcov/
