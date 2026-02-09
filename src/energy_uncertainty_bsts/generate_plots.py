@@ -10,11 +10,11 @@ def fit_bsts_model(data_series: pd.Series):
     Fits a Bayesian Structural Time Series (BSTS) model and returns the forecast.
     """
 
-    # Define the unobserved components model (Trend and Seasonality)
+    # Define the unobserved components model (Trend and Seasonality).
     model = sm.tsa.UnobservedComponents(
         data_series,
         level="local level",  # Trend
-        seasonal=7,  # Assume weekly seasonality (patterns) for energy load
+        seasonal=7,  # Assume weekly seasonality (patterns) for energy load. Patterns over the week sum to ~0.
     )
     results = model.fit(disp=False)
 
@@ -27,14 +27,14 @@ def fit_bsts_model(data_series: pd.Series):
 def main():
     ### Set up paths
 
-    # Go up two levels to reach the project root
+    # Go up two levels to reach the project root.
     project_root = Path(__file__).parent.parent.parent
 
     # TODO: Load data from CSV
     # data_path = project_root / "data" / "processed" / "energy_load.csv"
     assets_dir = project_root / "assets"
 
-    # Ensure the directory exists just in case
+    # Ensure the directory exists just in case.
     assets_dir.mkdir(parents=True, exist_ok=True)
 
     ### Load data
@@ -42,21 +42,25 @@ def main():
     # TODO: Load data from CSV
     # data_frame = pd.read_csv(data_path, index_col=0, parse_dates=True)
 
-    # Generate Synthetic Energy Load Data (Dubai-style: High Variance)
+    # Generate Synthetic Energy Load Data (Dubai-style: High Variance).
     np.random.seed(42)
     dates = pd.date_range(start="2024-01-01", periods=200, freq="D")
-    # Trend + Weekly Cycle + Humidity Shock + Noise
     load = (
-        100
-        + np.arange(200) * 0.2
-        + 15 * np.sin(2 * np.pi * dates.day_of_week / 7)
-        + np.random.normal(0, 5, 200)
+        100  # base load
+        + np.arange(200) * 0.2  # linear trend (mimicking population growth etc.)
+        + 15 * np.sin(2 * np.pi * dates.day_of_week / 7)  # weekly cycle
+        + np.random.normal(
+            0,
+            5,
+            200,
+        )  # Stochastic noise (mean, standard deviation, days per shock)
+        + (dates.month == 7) * 20  # humidity shock in July
     )
     data_frame = pd.DataFrame({"ds": dates, "y": load}).set_index("ds")
 
     ### Fit the model
     forecast_data_frame, results = fit_bsts_model(
-        data_frame["y"]  # Use the y (load) column from the DataFrame
+        data_frame["y"]  # Use the y (load) column from the DataFrame.
     )
 
     ### Create plots

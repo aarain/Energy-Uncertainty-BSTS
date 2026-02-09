@@ -96,7 +96,7 @@ def test_bsts_residual_normality():
 
 def test_bsts_parameter_stability():
     """
-    Ensure the model correctly identifies the 'Local Level' (true demand for energy) variance as a positive number.
+    Ensure the model correctly identifies the 'local level' (true demand for energy) variance as a positive number.
     """
 
     df_series = generate_energy_load()
