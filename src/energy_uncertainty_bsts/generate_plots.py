@@ -29,8 +29,8 @@ plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.savefig("assets/bsts_decomposition.png", dpi=300)
 print("Success! BSTS Decomposition saved as bsts_decomposition.png")
 
-# 5. Generate a Forecast Plot with Confidence Intervals (Traders love this!)
-forecast = res.get_forecast(steps=30)
+# 5. Generate a Forecast Plot with Confidence Intervals
+forecast = res.get_forecast(steps=30)  # 30-day forecast
 mean_forecast = forecast.summary_frame()["mean"]
 conf_int = forecast.summary_frame(alpha=0.10)  # 90% Confidence Interval
 
