@@ -42,10 +42,29 @@ This project uses `pip-tools` to manage dependencies. To update the lockfile:
 
 **Note**: This project requires `scipy < 1.13.0` to maintain compatibility with the `statsmodels` state-space backend in Python 3.12.
 
-## 🚀 Usage
+## ▶️ Usage
 
 **Generate Plots**: `python src/energy_uncertainty_bsts/generate_plots.py`
 
 **Run Linter**: `ruff check .`
 
 **Run Tests**: `pytest`
+
+## 🚀 Roadmap
+
+The current version provides a baseline for energy load using historical data. To move towards a production-ready trading tool, the following phases are planned:
+
+1. Replace synthetic data generation with real historical CSV datasets:
+   * This should add realistic external factors such as weather (humidity and temperature), tariff tiers (price increasing with consumption), and Ramadan (holidays).
+   * Use either DEWA or SEWA (Dubai/Sharjah Electricity and Water Authority) data.
+2. Sanitise the (real-world) input data:
+   * Handle sensor gaps using forward-filling/linear interpolation.
+   * Detect and remove outliers caused by predictable or extreme events e.g. grid maintenance or extreme heatwave.
+3. Validate the sanitised data:
+   * Recursively back-test historical data by implementing a Time Series split using a rolling window to measure the data's MASE (Mean Absolute Scaled Error).
+   * Verify the integrity of the distribution using a PIT (Probability Integral Transform) histogram. A U-shaped histogram implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
+4. Use GitHub Actions to automate the process of retraining the model on new seasonal (weekly) data.
+5. Build an interactive dashboard (e.g. with Streamlit). This should allow the user to:
+   * Recalculate the BSTS forecast in real time based on certain parameters e.g. humidity.
+   * Toggle between different VaR (Value at Risk) levels i.e. 90%, 95%, 99%.
+   * Compare the sanitised input data with their model's calibrated forecast.
