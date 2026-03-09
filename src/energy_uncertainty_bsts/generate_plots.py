@@ -1,7 +1,8 @@
 from pathlib import Path
-import pandas as pd
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import statsmodels.api as sm
 
 
@@ -39,35 +40,43 @@ def main():
 
     ### Load data
 
-    # TODO: Load data from CSV
+    # TODO: Load data from CSV instead of generating synthetic energy load data.
     # data_frame = pd.read_csv(data_path, index_col=0, parse_dates=True)
 
-    # Generate Synthetic Energy Load Data (Dubai-style: High Variance).
+    # Generate Synthetic Energy Load Data (Norwegian: high variance).
     np.random.seed(42)
     dates = pd.date_range(start="2024-01-01", periods=200, freq="D")
     load = (
-        100  # base load
-        + np.arange(200) * 0.2  # linear trend (mimicking population growth etc.)
-        + 15 * np.sin(2 * np.pi * dates.day_of_week / 7)  # weekly cycle
+        3000  # base load for NO1 (approx 3000 MW)
+        + np.arange(200) * 0.05  # linear trend (mimicking population growth etc.)
+        + 300 * np.sin(2 * np.pi * dates.day_of_week / 7 + 1.5)  # 1.5-shifted weekly cycle
+        + 1200 * np.cos(2 * np.pi * dates.dayofyear / 366)  # yearly cycle
         + np.random.normal(
             0,
-            5,
-            200,
+            100,
+            len(dates),
         )  # Stochastic noise (mean, standard deviation, days per shock)
-        + (dates.month == 7) * 20  # humidity shock in July
+        + np.where(
+            (dates.month == 1) & (dates.day <= 10), 1000, 0
+        )  # simulated shock like the cold snap in January 2024.
     )
-    data_frame = pd.DataFrame({"ds": dates, "y": load}).set_index("ds")
+    data_frame = pd.DataFrame({"Timestamp": dates, "Load_MW": load})
+    data_frame.set_index("Timestamp", inplace=True)
 
     ### Fit the model
     forecast_data_frame, results = fit_bsts_model(
-        data_frame["y"]  # Use the y (load) column from the DataFrame.
+        data_frame["Load_MW"]  # Use the load column from the DataFrame.
     )
 
     ### Create plots
 
     # Create decomposition plot
-    results.plot_components(figsize=(12, 10))
-    plt.suptitle("BSTS Decomposition: Energy Load Trends & Seasonality", fontsize=16)
+    fig = results.plot_components(figsize=(12, 10))
+    fig.supylabel("Load (MW)")
+    plt.suptitle(
+        "BSTS Decomposition: NO1 (Oslo) 2024 Energy Load Trends & Seasonality",
+        fontsize=16,
+    )
     plt.tight_layout(rect=(0, 0.03, 1, 0.95))
     plt.savefig(assets_dir / "bsts_decomposition.png", dpi=300)
     plt.close()
@@ -77,7 +86,7 @@ def main():
     plt.figure(figsize=(10, 6))
     plt.plot(
         data_frame.index[-60:],
-        data_frame["y"][-60:],
+        data_frame["Load_MW"][-60:],
         label="Observed Load",
         color="black",
     )
@@ -96,6 +105,7 @@ def main():
         label="90% Confidence Interval",
     )
     plt.title("30-Day Energy Demand Probabilistic Forecast")
+    plt.ylabel("Load (MW)")
     plt.legend()
     plt.savefig(assets_dir / "bsts_forecast.png", dpi=300)
     plt.close()

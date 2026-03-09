@@ -1,6 +1,6 @@
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
 
 from energy_uncertainty_bsts.generate_plots import fit_bsts_model
 
@@ -38,21 +38,13 @@ def test_bsts_forecast_integrity():
     assert not forecast.isnull().values.any(), "Forecast contains NaN values."
 
     # Check that lower < mean < upper
-    assert (forecast["mean_ci_upper"] > forecast["mean_ci_lower"]).all(), (
-        "Confidence intervals are inverted."
-    )
-    assert (forecast["mean_ci_upper"] >= forecast["mean"]).all(), (
-        "Mean exceeds upper confidence bound"
-    )
-    assert (forecast["mean"] >= forecast["mean_ci_lower"]).all(), (
-        "Mean is below lower confidence bound"
-    )
+    assert (forecast["mean_ci_upper"] > forecast["mean_ci_lower"]).all(), "Confidence intervals are inverted."
+    assert (forecast["mean_ci_upper"] >= forecast["mean"]).all(), "Mean exceeds upper confidence bound"
+    assert (forecast["mean"] >= forecast["mean_ci_lower"]).all(), "Mean is below lower confidence bound"
 
     # Check that uncertainty is non-zero (The model is actually 'uncertain')
     spread = forecast["mean_ci_upper"] - forecast["mean_ci_lower"]
-    assert np.all(spread > 0), (
-        "Model is producing zero-width confidence intervals (not capturing uncertainty)."
-    )
+    assert np.all(spread > 0), "Model is producing zero-width confidence intervals (not capturing uncertainty)."
 
 
 def test_forecast_variance_expansion():
@@ -63,16 +55,10 @@ def test_forecast_variance_expansion():
     df_series = generate_energy_load()
     forecast, _ = fit_bsts_model(df_series)
 
-    initial_spread = (
-        forecast["mean_ci_upper"].iloc[0] - forecast["mean_ci_lower"].iloc[0]
-    )
-    final_spread = (
-        forecast["mean_ci_upper"].iloc[-1] - forecast["mean_ci_lower"].iloc[-1]
-    )
+    initial_spread = forecast["mean_ci_upper"].iloc[0] - forecast["mean_ci_lower"].iloc[0]
+    final_spread = forecast["mean_ci_upper"].iloc[-1] - forecast["mean_ci_lower"].iloc[-1]
 
-    assert final_spread >= initial_spread, (
-        "Uncertainty should not decrease when forecast into the future."
-    )
+    assert final_spread >= initial_spread, "Uncertainty should not decrease when forecast into the future."
 
 
 def test_bsts_residual_normality():
@@ -89,9 +75,7 @@ def test_bsts_residual_normality():
     standardised_residuals = results.standardized_forecasts_error[0][7:]
 
     residual_mean = np.mean(standardised_residuals)
-    assert pytest.approx(residual_mean, abs=1.0) == 0, (
-        f"Residual mean {residual_mean} is too far from zero."
-    )
+    assert pytest.approx(residual_mean, abs=1.0) == 0, f"Residual mean {residual_mean} is too far from zero."
 
 
 def test_bsts_parameter_stability():
@@ -106,6 +90,4 @@ def test_bsts_parameter_stability():
     # VaR = mean + (z-score * standard_deviation) where standard_deviation = sqrt(sigma2.level) collapses for -ve
     # sigma2.level.
     level_variance = results.params["sigma2.level"]
-    assert level_variance >= 0, (
-        "Model produced negative variance: check state-space constraints."
-    )
+    assert level_variance >= 0, "Model produced negative variance: check state-space constraints."

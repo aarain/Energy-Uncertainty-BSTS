@@ -18,3 +18,12 @@ build-backend = "setuptools.build_meta"
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-v"
+
+[tool.ruff]
+fix = true
+line-length = 120
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
+select = ["E", "F", "I", "B", "UP"]

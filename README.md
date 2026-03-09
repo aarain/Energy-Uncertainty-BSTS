@@ -4,7 +4,7 @@ This project uses **Bayesian Structural Time Series (BSTS)** to break down energ
 
 ## 📈 Model Output
 
-Historic trend decomposition - _Isolates the underlying growth trend from weekly seasonality and irregular market volatility:_
+Historic trend decomposition - _Isolates the underlying growth trend from seasonality and irregular market volatility:_
 ![BSTS decomposition](assets/bsts_decomposition.png)
 
 Point estimate and confidence intervals - _Quantifies 90% confidence intervals_ (P10/P90) to inform Value-at-Risk (VaR):
@@ -18,7 +18,7 @@ The model is built on a **Linear Gaussian State Space** framework. Energy market
 
 * **Components**:
   * **Local Level**: A random walk process that captures the shifting baseline of energy demand.
-  * **Weekly Seasonality**: This (periodically) accounts for the differences in consumption patterns between weekdays and weekends.
+  * **Thermal Sensitivity**: Every 1°C drop in temperature causes load to increase, jumping significantly higher in the winter.
 
 * **Bayesian Inference**: Unlike models that provide a single "best" fit, this model uses weighted integration to account for parameter uncertainty, resulting in more realistic estimation of maximum potential loss (VaR).
 
@@ -52,13 +52,14 @@ This project uses `pip-tools` to manage dependencies. To update the lockfile:
 
 ## 🚀 Roadmap
 
-### Current project status
+### Phase 1: Probabilistic Baseline
 
-The current version provides a functional probabilistic baseline for energy load. This implementation:
+The current version of this project provides a functional probabilistic baseline for energy load. This implementation:
 
-* Utilises Bayesian Structural Time Series (BSTS) to isolate the local Level (long-term trend) from weekly seasonality (7-day cycles).
+* Utilises Bayesian Structural Time Series (BSTS) to isolate the local Level (long-term trend) from yearly and weekly seasonality.
 * Moves beyond single-point estimates by generating 90% confidence intervals, providing a mathematical basis for Value-at-Risk (VaR) analysis.
-* Uses a high-variance synthetic data engine to simulate "Dubai-style" energy shocks.
+* Models asymmetric tail risk to identify supply-side shortages and demand-side surges.
+* Uses a high-variance synthetic data engine to simulate Nordic energy load spikes (caused by events such as a winter cold snap).
 
 ### Future development
 
@@ -67,22 +68,22 @@ To move towards a production-ready trading tool, the following phases are planne
 #### Phase 2: Real-world data & sanitisation
 
 * Replace synthetic data generation with real historical CSV datasets:
-   * This should add realistic external regressors such as weather (humidity and temperature), tariff tiers (price increasing with consumption), and Ramadan (holidays).
-   * Use either DEWA or SEWA (Dubai/Sharjah Electricity and Water Authority) data.
+   * This should add realistic external regressors such as weather (temperature and wind speed), storage (reservoir water levels), residential EV usage (creating a peak in mornings and evenings), and price coupling (Norwegian exports).
+   * Source data from either the ENTSO-E Transparency Platform or Nord Pool day-ahead for NO1 price area (open data).
 * Sanitise the (real-world) input data:
    * Handle sensor gaps using forward-filling/linear interpolation.
-   * Detect and remove outliers caused by predictable or extreme events e.g. grid maintenance or extreme heatwave.
+   * Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while preserving extreme weather events.
 
 #### Phase 3: Model validation
 
 * Validate the sanitised data:
    * Recursively back-test historical data by implementing a Time Series split using a rolling window to measure the data's MASE (Mean Absolute Scaled Error).
-   * Verify the model's calibration a PIT (Probability Integral Transform) histogram. A U-shaped histogram implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
+   * Verify the model's calibration using a PIT (Probability Integral Transform) histogram. A U-shaped histogram implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
 
 #### Phase 4: Machine Learning Operations & interactive visualisation
 
-* Use GitHub Actions to automate the process of retraining the model on new seasonal (weekly) data.
+* Use GitHub Actions to automate the process of retraining the model on new seasonal data.
 * Build an interactive dashboard (e.g. with Streamlit). This should allow the user to:
-   * Recalculate the BSTS forecast in real time based on certain parameters e.g. humidity.
+   * Recalculate the BSTS forecast in real time based on certain parameters e.g. wind speed.
    * Toggle between different VaR levels i.e. 90%, 95%, 99%.
    * Compare the sanitised input data with their model's calibrated forecast.
