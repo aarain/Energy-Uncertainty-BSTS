@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * 1'  # Runs every Monday at midnight
   workflow_dispatch:     # Adds "Run Workflow" trigger for manual testing
 
+permissions:
+  contents: write        # Allows the bot to push changes to the repo
+
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
