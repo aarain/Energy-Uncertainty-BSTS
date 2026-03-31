@@ -28,7 +28,3 @@ build/
 # Coverage reports
 .coverage
 htmlcov/
-
-# Data
-data/
-!data/external/nordpool_no1_load.csv
