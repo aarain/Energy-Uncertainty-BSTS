@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from energy_uncertainty_bsts.data_fetcher import fetch_nordic_load
 from src.energy_uncertainty_bsts.config import COUNTRY_CODE, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
+from src.energy_uncertainty_bsts.data_fetcher import fetch_nordic_load
 
 
 def test_fetch_nordic_load_missing_key(monkeypatch):
@@ -52,7 +52,7 @@ def test_fetch_nordic_load_success(mock_query, monkeypatch, tmp_path):
     # Mock the file saving path to use a temporary directory so the real data is not overwritten.
     test_csv_path = tmp_path / LOAD_DATA_FILENAME
 
-    with patch("energy_uncertainty_bsts.data_fetcher.Path") as mock_path:
+    with patch("src.energy_uncertainty_bsts.data_fetcher.Path") as mock_path:
         # Set the mock path to return the temporary test path.
         mock_path.return_value = test_csv_path
         # Ensure directory creation doesn't fail.

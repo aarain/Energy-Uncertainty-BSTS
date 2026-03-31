@@ -72,7 +72,7 @@ The data fetcher automation is configured in this project's GitHub workflow yaml
 
 To run the data fetcher manually, use the following command:
 
-`npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py`
+`PYTHONPATH=. npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py`
 
 ## 🚀 Roadmap
 

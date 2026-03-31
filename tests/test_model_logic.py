@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from energy_uncertainty_bsts.generate_plots import fit_bsts_model
+from src.energy_uncertainty_bsts.generate_plots import fit_bsts_model
 
 
 def generate_energy_load(seed=42, size=200, mean=100, std=10):
