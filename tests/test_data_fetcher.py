@@ -4,14 +4,15 @@ import pandas as pd
 import pytest
 
 from energy_uncertainty_bsts.data_fetcher import fetch_nordic_load
+from src.energy_uncertainty_bsts.config import COUNTRY_CODE, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
 
 
 def test_fetch_nordic_load_missing_key(monkeypatch):
     """
-    Raise a ValueError when the ENTSOE_API_KEY environment variable is not set.
+    Raise a ValueError when the API key environment variable is not set.
     """
 
-    monkeypatch.delenv("ENTSOE_API_KEY", raising=False)
+    monkeypatch.delenv(name=ENTSOE_API_KEY_NAME, raising=False)
 
     with pytest.raises(ValueError, match="API Key not found"):
         fetch_nordic_load()
@@ -23,7 +24,7 @@ def test_daily_resampling_math():
     """
 
     hourly_values = [10, 20, 30, 40]  # Mean of 10, 20, 30, 40 is 25.0
-    time_index = pd.date_range(start="2026-01-01", periods=4, freq="h")
+    time_index = pd.date_range(start=f"{YEAR}-01-01", periods=4, freq="h")
     df = pd.Series(data=hourly_values, index=time_index)
 
     daily = df.resample("D").mean()
@@ -40,16 +41,16 @@ def test_fetch_nordic_load_success(mock_query, monkeypatch, tmp_path):
 
     ### Set up mock environment
 
-    monkeypatch.setenv("ENTSOE_API_KEY", "fake_test_key")
+    monkeypatch.setenv(ENTSOE_API_KEY_NAME, "fake_test_key")
 
     # Create 48 hours of fake data (2 days) all at 1000 MW.
     hourly_values = [1000.0] * 48
-    time_index = pd.date_range("2026-01-01", periods=48, freq="h", tz="UTC")
+    time_index = pd.date_range(f"{YEAR}-01-01", periods=48, freq="h", tz="UTC")
     fake_series = pd.Series(data=hourly_values, index=time_index)
     mock_query.return_value = fake_series
 
     # Mock the file saving path to use a temporary directory so the real data is not overwritten.
-    test_csv_path = tmp_path / "nordpool_no1_load.csv"
+    test_csv_path = tmp_path / LOAD_DATA_FILENAME
 
     with patch("energy_uncertainty_bsts.data_fetcher.Path") as mock_path:
         # Set the mock path to return the temporary test path.
@@ -57,7 +58,7 @@ def test_fetch_nordic_load_success(mock_query, monkeypatch, tmp_path):
         # Ensure directory creation doesn't fail.
         mock_path.parent.mkdir = MagicMock()
 
-        fetch_nordic_load(year=2026)
+        fetch_nordic_load(year=YEAR)
 
     ### Assertions
 
@@ -65,7 +66,7 @@ def test_fetch_nordic_load_success(mock_query, monkeypatch, tmp_path):
     mock_query.assert_called_once()
 
     # Check the API was called with the correct country code
-    assert mock_query.call_args.kwargs["country_code"] == "NO_1"
+    assert mock_query.call_args.kwargs["country_code"] == COUNTRY_CODE
 
     # Check the CSV file was saved
     assert test_csv_path.exists()
