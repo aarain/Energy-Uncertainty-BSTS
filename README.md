@@ -1,6 +1,11 @@
 # Energy Uncertainty BSTS
 
-This project uses **Bayesian Structural Time Series (BSTS)** to break down energy load into clear trend patterns while accounting for external market shocks. Unlike traditional point-estimate models, this approach uses a **probabilistic forecast** to quantify "worst-case" scenarios. It is specifically designed to handle volatile global energy markets, providing a more reliable edge for short-term trading decisions.
+![Update Nordic Load Data](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yml/badge.svg)
+
+This project uses **Bayesian Structural Time Series (BSTS)** to break down energy load into clear trend patterns while
+accounting for external market shocks. Unlike traditional point-estimate models, this approach uses a
+**probabilistic forecast** to quantify "worst-case" scenarios. It is specifically designed to handle volatile global
+energy markets, providing a more reliable edge for short-term trading decisions.
 
 ## 📈 Model Output
 
@@ -12,17 +17,23 @@ Point estimate and confidence intervals - _Quantifies 90% confidence intervals_ 
 
 ## 📊 Statistical Profile
 
-The model is built on a **Linear Gaussian State Space** framework. Energy markets often exhibit non-linear behavior, but using BSTS provides a reliable baseline by decomposing the signal as follows:
+The model is built on a **Linear Gaussian State Space** framework. Energy markets often exhibit non-linear behaviour,
+but using BSTS provides a reliable baseline by decomposing the signal as follows:
 
-* **Distribution**: A Gaussian (Normal) error structure is assumed for the stochastic components. This allows generation of the symmetric 90% predictive intervals seen in the forecast.
+* **Distribution**: A Gaussian (Normal) error structure is assumed for the stochastic components.
+This allows generation of the symmetric 90% predictive intervals seen in the forecast.
 
 * **Components**:
   * **Local Level**: A random walk process that captures the shifting baseline of energy demand.
-  * **Thermal Sensitivity**: Every 1°C drop in temperature causes load to increase, jumping significantly higher in the winter.
+  * **Thermal Sensitivity**: Every 1°C drop in temperature causes load to increase, jumping significantly higher in the
+winter.
 
-* **Bayesian Inference**: Unlike models that provide a single "best" fit, this model uses weighted integration to account for parameter uncertainty, resulting in more realistic estimation of maximum potential loss (VaR).
+* **Bayesian Inference**: Unlike models that provide a single "best" fit, this model uses weighted integration to
+account for parameter uncertainty, resulting in more realistic estimation of maximum potential loss (VaR).
 
 ## 🛠 Installation
+
+All the commands in this README assume use of a Linux terminal.
 
 How to get the development env running:
 
@@ -40,7 +51,20 @@ This project uses `pip-tools` to manage dependencies. To update the lockfile:
 2. Run `pip-compile requirements.in` to generate a fresh `requirements.txt`.
 3. Run `pip-sync` to align your virtual environment.
 
-**Note**: This project requires `scipy < 1.13.0` to maintain compatibility with the `statsmodels` state-space backend in Python 3.12.
+**Note**: This project requires `scipy < 1.13.0` to maintain compatibility with the `statsmodels` state-space backend
+in Python 3.12.
+
+## 🔑 API secrets
+
+To fetch the ENTSO-E energy load data, the data fetcher script requires an API key.
+This API key (named `ENTSOE_API_KEY`) has been encrypted using `dotenvx` and stored in the `.env` file.
+The GitHub secrets manager also stores this API key as well as the associated `DOTENV_PRIVATE_KEY` requred to decrypt
+it, and injects the API key into the runtime environment.
+The data fetcher automation is configured in this project's GitHub workflow yaml file.
+
+To run the data fetcher manually, use the following command:
+
+`npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py`
 
 ## ▶️ Usage
 
@@ -56,10 +80,13 @@ This project uses `pip-tools` to manage dependencies. To update the lockfile:
 
 The current version of this project provides a functional probabilistic baseline for energy load. This implementation:
 
-* Utilises Bayesian Structural Time Series (BSTS) to isolate the local Level (long-term trend) from yearly and weekly seasonality.
-* Moves beyond single-point estimates by generating 90% confidence intervals, providing a mathematical basis for Value-at-Risk (VaR) analysis.
+* Utilises Bayesian Structural Time Series (BSTS) to isolate the local Level (long-term trend) from yearly and weekly
+seasonality.
+* Moves beyond single-point estimates by generating 90% confidence intervals, providing a mathematical basis for
+Value-at-Risk (VaR) analysis.
 * Models asymmetric tail risk to identify supply-side shortages and demand-side surges.
-* Uses a high-variance synthetic data engine to simulate Nordic energy load spikes (caused by events such as a winter cold snap).
+* Uses a high-variance synthetic data engine to simulate Nordic energy load spikes (caused by events such as a winter
+cold snap).
 
 ### Future development
 
@@ -68,17 +95,21 @@ To move towards a production-ready trading tool, the following phases are planne
 #### Phase 2: Real-world data & sanitisation
 
 * Replace synthetic data generation with real historical CSV datasets:
-   * This should add realistic external regressors such as weather (temperature and wind speed), storage (reservoir water levels), residential EV usage (creating a peak in mornings and evenings), and price coupling (Norwegian exports).
+   * This should add realistic external regressors such as weather (temperature and wind speed), storage (reservoir
+water levels), residential EV usage (creating a peak in mornings and evenings), and price coupling (Norwegian exports).
    * Source data from either the ENTSO-E Transparency Platform or Nord Pool day-ahead for NO1 price area (open data).
 * Sanitise the (real-world) input data:
    * Handle sensor gaps using forward-filling/linear interpolation.
-   * Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while preserving extreme weather events.
+   * Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while
+preserving extreme weather events.
 
 #### Phase 3: Model validation
 
 * Validate the sanitised data:
-   * Recursively back-test historical data by implementing a Time Series split using a rolling window to measure the data's MASE (Mean Absolute Scaled Error).
-   * Verify the model's calibration using a PIT (Probability Integral Transform) histogram. A U-shaped histogram implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
+   * Recursively back-test historical data by implementing a Time Series split using a rolling window to measure the
+data's MASE (Mean Absolute Scaled Error).
+   * Verify the model's calibration using a PIT (Probability Integral Transform) histogram. A U-shaped histogram
+implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
 
 #### Phase 4: Machine Learning Operations & interactive visualisation
 

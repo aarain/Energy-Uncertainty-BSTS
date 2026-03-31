@@ -1,0 +1,38 @@
+name: Update Nordic Load Data
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Runs every Monday at midnight
+  workflow_dispatch:     # Adds "Run Workflow" trigger for manual testing
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install entsoe-py pandas
+
+      - name: Install dotenvx
+        run: curl -sfS https://dotenvx.sh/install.sh | sh
+
+      - name: Run Data Fetcher
+        env:
+          DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
+        run: npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py
+
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/external/nordpool_no1_load.csv
+          git commit -m "Automated data update: $(date +'%Y-%m-%d')" || exit 0
+          git push

@@ -9,6 +9,7 @@ def generate_energy_load(seed=42, size=200, mean=100, std=10):
     """
     Generates reproducible normal distribution data.
     """
+
     rng = np.random.default_rng(seed)
     data = rng.normal(loc=mean, scale=std, size=size)
     df_series = pd.Series(data)
