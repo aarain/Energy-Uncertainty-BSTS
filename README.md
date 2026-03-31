@@ -1,10 +1,10 @@
 # Energy Uncertainty BSTS
 
-![Update Nordic Load Data](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yml/badge.svg)
+[![Update Nordic Load Data](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yaml/badge.svg)](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yaml)
 
 This project uses **Bayesian Structural Time Series (BSTS)** to break down energy load into clear trend patterns while
 accounting for external market shocks. Unlike traditional point-estimate models, this approach uses a
-**probabilistic forecast** to quantify "worst-case" scenarios. It is specifically designed to handle volatile global
+**probabilistic forecast** to quantify worst-case scenarios. It is specifically designed to handle volatile global
 energy markets, providing a more reliable edge for short-term trading decisions.
 
 ## 📈 Model Output
@@ -54,6 +54,14 @@ This project uses `pip-tools` to manage dependencies. To update the lockfile:
 **Note**: This project requires `scipy < 1.13.0` to maintain compatibility with the `statsmodels` state-space backend
 in Python 3.12.
 
+## ▶️ Usage
+
+**Generate Plots**: `python src/energy_uncertainty_bsts/generate_plots.py`
+
+**Run Linter**: `ruff check .`
+
+**Run Tests**: `pytest`
+
 ## 🔑 API secrets
 
 To fetch the ENTSO-E energy load data, the data fetcher script requires an API key.
@@ -65,14 +73,6 @@ The data fetcher automation is configured in this project's GitHub workflow yaml
 To run the data fetcher manually, use the following command:
 
 `npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py`
-
-## ▶️ Usage
-
-**Generate Plots**: `python src/energy_uncertainty_bsts/generate_plots.py`
-
-**Run Linter**: `ruff check .`
-
-**Run Tests**: `pytest`
 
 ## 🚀 Roadmap
 
