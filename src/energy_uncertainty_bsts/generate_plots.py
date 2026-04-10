@@ -46,7 +46,8 @@ def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
 
 def fit_bsts_model(data_series: pd.Series):
     """
-    Fits a Bayesian Structural Time Series (BSTS) model and returns the forecast.
+    Fits a State Space Structural Time Series (STS) model using Maximum Likelihood Estimation (MLE)
+    and returns the probabilistic forecast.
     """
 
     # Define the unobserved components model (Trend and Seasonality).

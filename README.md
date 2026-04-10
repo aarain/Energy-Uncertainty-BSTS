@@ -2,7 +2,7 @@
 
 [![Update Nordic Load Data](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yaml/badge.svg)](https://github.com/aarain/Energy-Uncertainty-BSTS/actions/workflows/update_data.yaml)
 
-This project uses **Bayesian Structural Time Series (BSTS)** to break down energy load into clear trend patterns while
+This project uses **Structural Time Series (STS)** to break down energy load into clear trend patterns while
 accounting for external market shocks. Unlike traditional point-estimate models, this approach uses a
 **probabilistic forecast** to quantify worst-case scenarios. It is specifically designed to handle volatile global
 energy markets, providing a more reliable edge for short-term trading decisions.
@@ -18,18 +18,17 @@ Point estimate and confidence intervals - _Quantifies 90% confidence intervals_ 
 ## 📊 Statistical Profile
 
 The model is built on a **Linear Gaussian State Space** framework. Energy markets often exhibit non-linear behaviour,
-but using BSTS provides a reliable baseline by decomposing the signal as follows:
+but using this structural approach provides a reliable baseline by decomposing the signal as follows:
 
 * **Distribution**: A Gaussian (Normal) error structure is assumed for the stochastic components.
 This allows generation of the symmetric 90% predictive intervals seen in the forecast.
 
 * **Components**:
   * **Local Level**: A random walk process that captures the shifting baseline of energy demand.
-  * **Thermal Sensitivity**: Every 1°C drop in temperature causes load to increase, jumping significantly higher in the
-winter.
+  * **Seasonality**: A seasonal component that models the 7-day weekly cycle of human and industrial activity.
 
-* **Bayesian Inference**: Unlike models that provide a single "best" fit, this model uses weighted integration to
-account for parameter uncertainty, resulting in more realistic estimation of maximum potential loss (VaR).
+* **Estimation**: This model uses the Kalman Filter and Maximum Likelihood Estimation (MLE) within a state space
+framework to separate the trend and seasonality components from observed noise.
 
 ## 🛠 Installation
 
@@ -76,11 +75,15 @@ To run the data fetcher manually, use the following command:
 
 ## 🚀 Roadmap
 
-### Phase 1: Probabilistic Baseline
+### Current implementation
+
+The following phase is active:
+
+#### Phase 1: Probabilistic Baseline
 
 The current version of this project provides a functional probabilistic baseline for energy load. This implementation:
 
-* Utilises Bayesian Structural Time Series (BSTS) to isolate the local Level (long-term trend) from yearly and weekly
+* Utilises Structural Time Series (STS) to isolate the local Level (long-term trend) from yearly and weekly
 seasonality.
 * Moves beyond single-point estimates by generating 90% confidence intervals, providing a mathematical basis for
 Value-at-Risk (VaR) analysis.
@@ -111,10 +114,21 @@ data's MASE (Mean Absolute Scaled Error).
    * Verify the model's calibration using a PIT (Probability Integral Transform) histogram. A U-shaped histogram
 implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
 
-#### Phase 4: Machine Learning Operations & interactive visualisation
+#### Phase 4: Machine learning operations & interactive visualisation
 
 * Use GitHub Actions to automate the process of retraining the model on new seasonal data.
 * Build an interactive dashboard (e.g. with Streamlit). This should allow the user to:
    * Recalculate the BSTS forecast in real time based on certain parameters e.g. wind speed.
    * Toggle between different VaR levels i.e. 90%, 95%, 99%.
    * Compare the sanitised input data with their model's calibrated forecast.
+
+#### Phase 5: Transition to full Bayesian inference
+
+* Transition from using MLE to Bayesian MCMC (Markov Chain Monte Carlo) to simulate the posterior distribution of the
+underlying states, i.e. migrate from using `statsmodels` to one of `PyMC`, `TensorFlow Probability`, `PyBSTS`.
+* Use the full posterior distribution to refine VaR calculations.
+* Implement priors to automatically identify which external regressors have the most predictive power
+e.g. reservoir levels, wind speed.
+
+**Note:** The transition from MLE to BSTS will increase the computational complexity and thus the runtime from under
+1 second to 1-5 minutes.
