@@ -100,16 +100,16 @@ To move towards a production-ready trading tool, the following phases are planne
 * Replace synthetic data generation with real historical CSV datasets:
    * This should add realistic external regressors such as weather (temperature and wind speed), storage (reservoir
 water levels), residential EV usage (creating a peak in mornings and evenings), and price coupling (Norwegian exports).
-   * Source data from either the ENTSO-E Transparency Platform or Nord Pool day-ahead for NO1 price area (open data).
+   * [_Implemented_] Source data from either the ENTSO-E Transparency Platform or Nord Pool day-ahead for NO1 price area (open data).
 * Sanitise the (real-world) input data:
-   * Handle sensor gaps using forward-filling/linear interpolation.
+   * [_Implemented_] Handle sensor gaps using forward-filling/linear interpolation.
    * Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while
 preserving extreme weather events.
 
 #### Phase 3: Model validation
 
 * Validate the sanitised data:
-   * Recursively back-test historical data by implementing a Time Series split using a rolling window to measure the
+   * Recursively back-test historical data by implementing a time series split using a rolling window to measure the
 data's MASE (Mean Absolute Scaled Error).
    * Verify the model's calibration using a PIT (Probability Integral Transform) histogram. A U-shaped histogram
 implies underconfidence (narrow intervals), while an inverted U shape implies overconfidence (wide intervals).
