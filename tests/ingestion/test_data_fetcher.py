@@ -25,9 +25,9 @@ def test_daily_resampling_math():
 
     hourly_values = [10, 20, 30, 40]  # Mean of 10, 20, 30, 40 is 25.0
     time_index = pd.date_range(start=f"{YEAR}-01-01", periods=4, freq="h")
-    df = pd.Series(data=hourly_values, index=time_index)
+    data_frame = pd.Series(data=hourly_values, index=time_index)
 
-    daily = df.resample("D").mean()
+    daily = data_frame.resample("D").mean()
 
     assert daily.iloc[0] == 25.0
 

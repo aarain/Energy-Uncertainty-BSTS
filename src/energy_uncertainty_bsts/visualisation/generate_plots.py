@@ -2,10 +2,8 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import statsmodels.api as sm
 
-from energy_uncertainty_bsts.processing.processor import remove_outliers
-from src.energy_uncertainty_bsts.config import (
+from energy_uncertainty_bsts.config import (
     ASSETS_DIR,
     CSV_LOAD_COLUMN_NAME,
     DATA_DIR,
@@ -13,6 +11,8 @@ from src.energy_uncertainty_bsts.config import (
     FORECAST_FILENAME,
     LOAD_DATA_FILENAME,
 )
+from energy_uncertainty_bsts.modelling.sts_modeller import fit_sts_model
+from energy_uncertainty_bsts.processing.processor import remove_outliers
 
 
 def get_project_root() -> Path:
@@ -61,26 +61,6 @@ def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
     data_frame = remove_outliers(data_frame, target_col)
 
     return data_frame
-
-
-def fit_bsts_model(data_series: pd.Series):
-    """
-    Fits a State Space Structural Time Series (STS) model using Maximum Likelihood Estimation (MLE)
-    and returns the probabilistic forecast.
-    """
-
-    # Define the unobserved components model (Trend and Seasonality).
-    model = sm.tsa.UnobservedComponents(
-        data_series,
-        level="local level",  # Trend
-        seasonal=7,  # Assume weekly seasonality (patterns) for energy load. Patterns over the week sum to ~0.
-    )
-    results = model.fit(disp=False)
-
-    # Set 30-day forecast and a 90% confidence interval
-    forecast_data_frame = results.get_forecast(steps=30).summary_frame(alpha=0.10)
-
-    return forecast_data_frame, results
 
 
 def generate_plots(data_frame, forecast_data_frame, results, assets_dir, target_col):
@@ -142,7 +122,7 @@ def main():
 
     data_frame = load_and_preprocess_data(data_path, target_col)
 
-    forecast_data_frame, results = fit_bsts_model(data_frame[target_col])
+    forecast_data_frame, results = fit_sts_model(data_frame[target_col])
 
     generate_plots(data_frame, forecast_data_frame, results, assets_dir, target_col)
 
