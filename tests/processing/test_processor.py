@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from energy_uncertainty_bsts.processing.processor import remove_outliers
 from src.energy_uncertainty_bsts.config import CSV_LOAD_COLUMN_NAME
-from src.energy_uncertainty_bsts.processor import remove_outliers
 
 target_col = CSV_LOAD_COLUMN_NAME
 

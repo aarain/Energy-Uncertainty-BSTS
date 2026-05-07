@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.api as sm
 
+from energy_uncertainty_bsts.processing.processor import remove_outliers
 from src.energy_uncertainty_bsts.config import (
     ASSETS_DIR,
     CSV_LOAD_COLUMN_NAME,
@@ -12,7 +13,22 @@ from src.energy_uncertainty_bsts.config import (
     FORECAST_FILENAME,
     LOAD_DATA_FILENAME,
 )
-from src.energy_uncertainty_bsts.processor import remove_outliers
+
+
+def get_project_root() -> Path:
+    """
+    Return the path at the project root.
+    """
+
+    file_at_root = "README.md"
+    absolute_path = Path(__file__).resolve()
+
+    # Keep going up levels until the project root is reached.
+    for parent in absolute_path.parents:
+        if (parent / file_at_root).exists():
+            return parent
+
+    raise FileNotFoundError(f"Cannot find project root because the file '{file_at_root}' cannot be found.")
 
 
 def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
@@ -119,7 +135,7 @@ def generate_plots(data_frame, forecast_data_frame, results, assets_dir, target_
 
 def main():
     ### Set up paths
-    project_root = Path(__file__).parent.parent.parent  # Go up two levels to reach the project root.
+    project_root = get_project_root()
     data_path = project_root / f"{DATA_DIR}{LOAD_DATA_FILENAME}"
     assets_dir = project_root / ASSETS_DIR
     target_col = CSV_LOAD_COLUMN_NAME

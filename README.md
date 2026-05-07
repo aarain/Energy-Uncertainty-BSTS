@@ -55,7 +55,7 @@ in Python 3.12.
 
 ## ▶️ Usage
 
-**Generate Plots**: `python src/energy_uncertainty_bsts/generate_plots.py`
+**Generate Plots**: `python src/energy_uncertainty_bsts/visualisation/generate_plots.py`
 
 **Run Linter**: `ruff check .`
 
@@ -71,7 +71,7 @@ The data fetcher automation is configured in this project's GitHub workflow yaml
 
 To run the data fetcher manually, use the following command:
 
-`PYTHONPATH=. npx dotenvx run -- python src/energy_uncertainty_bsts/data_fetcher.py`
+`PYTHONPATH=. npx dotenvx run -- python src/energy_uncertainty_bsts/ingestion/data_fetcher.py`
 
 ## 🚀 Roadmap
 
