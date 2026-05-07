@@ -103,7 +103,7 @@ water levels), residential EV usage (creating a peak in mornings and evenings), 
    * [_Implemented_] Source data from either the ENTSO-E Transparency Platform or Nord Pool day-ahead for NO1 price area (open data).
 * Sanitise the (real-world) input data:
    * [_Implemented_] Handle sensor gaps using forward-filling/linear interpolation.
-   * Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while
+   * [_Implemented_] Detect and remove outliers caused by non-market events (e.g. sensor malfunctions or manual grid overrides) while
 preserving extreme weather events.
 
 #### Phase 3: Model validation

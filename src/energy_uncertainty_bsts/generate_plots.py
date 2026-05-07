@@ -12,6 +12,7 @@ from src.energy_uncertainty_bsts.config import (
     FORECAST_FILENAME,
     LOAD_DATA_FILENAME,
 )
+from src.energy_uncertainty_bsts.processor import remove_outliers
 
 
 def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
@@ -31,7 +32,7 @@ def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
     if data_frame.index.freq is None:
         data_frame = data_frame.asfreq("D")
 
-    # If there are missing days, fill them so statsmodels doesn't crash
+    # If there are missing days, forward-fill them so statsmodels doesn't crash.
     data_frame = data_frame.ffill()
 
     # Identify the load column
@@ -40,6 +41,8 @@ def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
         first_col = data_frame.columns[0]
         print(f"Warning: '{target_col}' column not found. Using '{first_col}' instead.")
         data_frame = data_frame.rename(columns={first_col: target_col})
+
+    data_frame = remove_outliers(data_frame, target_col)
 
     return data_frame
 
