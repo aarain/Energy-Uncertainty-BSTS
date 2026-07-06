@@ -66,10 +66,12 @@ def test_load_and_preprocess_calls_outlier_removal(fake_data_frame, fake_csv):
 
 
 def test_get_project_root_success():
-    project_root = "Energy-Uncertainty-BSTS"
-    _, separator, after = str(get_project_root()).partition(project_root)
+    root_path = get_project_root()
 
-    assert f"{separator}{after}" == project_root
+    assert root_path.is_dir()
+    # Assert the root path is correct by verifying an expected root-level file or directory exists.
+    assert (root_path / "pyproject.toml").exists() or (root_path / "src").exists()
+    assert root_path.name == "Energy-Uncertainty-BSTS"
 
 
 def test_get_project_root_error():
