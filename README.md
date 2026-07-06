@@ -43,6 +43,8 @@ How to get the development env running:
    source .venv/bin/activate
    pip install -r requirements.txt
     ```
+3. To allow command line execution of Python files (like the `generate_plots` script),
+**install the project in editable mode**: `pip install -e .`
 
 ### Development Workflow
 This project uses `pip-tools` to manage dependencies. To update the lockfile:
@@ -55,7 +57,7 @@ in Python 3.12.
 
 ## ▶️ Usage
 
-**Generate Plots**: `python src/energy_uncertainty_bsts/visualisation/generate_plots.py`
+**Generate Plots**: `python -m energy_uncertainty_bsts.visualisation.generate_plots`
 
 **Run Linter**: `ruff check .`
 

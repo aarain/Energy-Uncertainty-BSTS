@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
+from energy_uncertainty_bsts.config import COUNTRY_CODE, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
 from energy_uncertainty_bsts.ingestion.data_fetcher import fetch_nordic_load
-from src.energy_uncertainty_bsts.config import COUNTRY_CODE, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
 
 
 def test_fetch_nordic_load_missing_key(monkeypatch):

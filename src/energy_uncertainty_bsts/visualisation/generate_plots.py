@@ -12,7 +12,7 @@ from energy_uncertainty_bsts.config import (
     LOAD_DATA_FILENAME,
 )
 from energy_uncertainty_bsts.modelling.sts_modeller import fit_sts_model
-from energy_uncertainty_bsts.processing.processor import remove_outliers
+from energy_uncertainty_bsts.processing.processor import preprocess_data, remove_outliers
 
 
 def get_project_root() -> Path:
@@ -40,23 +40,9 @@ def load_and_preprocess_data(data_file: Path, target_col) -> pd.DataFrame:
         raise FileNotFoundError(f"Could not find data at {data_file}")
 
     # Assume the CSV has 2 columns: a date column and a load values column.
-    data_frame = pd.read_csv(filepath_or_buffer=data_file, index_col=0)
+    data_frame = pd.read_csv(filepath_or_buffer=data_file)
 
-    # Manually parse dates to adjust for daylight savings by converting the timestamp column to UTC
-    data_frame.index = pd.to_datetime(data_frame.index, utc=True)
-
-    if data_frame.index.freq is None:
-        data_frame = data_frame.asfreq("D")
-
-    # If there are missing days, forward-fill them so statsmodels doesn't crash.
-    data_frame = data_frame.ffill()
-
-    # Identify the load column
-    if target_col not in data_frame.columns:
-        # If the expected load values column name is not found, take the first available column.
-        first_col = data_frame.columns[0]
-        print(f"Warning: '{target_col}' column not found. Using '{first_col}' instead.")
-        data_frame = data_frame.rename(columns={first_col: target_col})
+    data_frame = preprocess_data(data_frame, target_col)
 
     data_frame = remove_outliers(data_frame, target_col)
 

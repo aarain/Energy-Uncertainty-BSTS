@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from entsoe import EntsoePandasClient
 
-from src.energy_uncertainty_bsts.config import COUNTRY_CODE, DATA_DIR, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
+from energy_uncertainty_bsts.config import COUNTRY_CODE, DATA_DIR, ENTSOE_API_KEY_NAME, LOAD_DATA_FILENAME, YEAR
 
 
 def fetch_nordic_load(year: int = YEAR):
