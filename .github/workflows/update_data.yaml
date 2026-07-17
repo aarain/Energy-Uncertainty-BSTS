@@ -33,6 +33,7 @@ jobs:
       - name: Run Data Fetcher
         env:
           DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
+          PYTHONPATH: src
         run: npx dotenvx run -- python -m energy_uncertainty_bsts.ingestion.data_fetcher
 
       - name: Commit and Push Data
