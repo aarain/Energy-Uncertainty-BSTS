@@ -31,7 +31,7 @@ jobs:
         env:
           DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
           PYTHONPATH: ${{ github.workspace }}  # Set the PYTHONPATH to the project root
-        run: npx dotenvx run -- python src/energy_uncertainty_bsts/ingestion/data_fetcher.py
+        run: npx dotenvx run -- python -m src.energy_uncertainty_bsts.ingestion.data_fetcher
 
       - name: Commit and Push Data
         run: |
